@@ -1,12 +1,16 @@
 var createError = require('http-errors');
 var express = require('express');
+const dotenv = require('dotenv');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const Sequelize = require('sequelize');
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+dotenv.config();
 var app = express();
 
 // view engine setup
@@ -37,5 +41,15 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+const sequelize = new Sequelize(process.env.DATABASE_URL, { native: true });
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
 
 module.exports = app;
