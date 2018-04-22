@@ -12,7 +12,11 @@
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
-    "morgan": "~1.9.0"
+    "morgan": "~1.9.0",
+    "pg": "^7.4.1",
+    "pg-hstore": "^2.3.2",
+    "pg-native": "^2.2.0",
+    "sequelize": "^4.37.6"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
