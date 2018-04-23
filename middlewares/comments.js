@@ -71,4 +71,4 @@ exports.createComment = (req, res) => {
       .create({ movieId, body })
       .then(comment => res.json(comment));
   }
-}
+};
