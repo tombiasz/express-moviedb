@@ -7,6 +7,7 @@ const logger = require('morgan');
 const Sequelize = require('sequelize');
 
 const moviesRouter = require('./routes/movies');
+const commentsRouter = require('./routes/comments');
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/movies', moviesRouter);
+app.use('/comments', commentsRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => next(createError(404)));
