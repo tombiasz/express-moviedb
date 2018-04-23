@@ -11,4 +11,9 @@ router.get('/', (req, res) => {
     .then(movies => res.json(movies));
 });
 
+router.post('/', (req, res) => {
+  const { title } = req.body;
+  res.json(title);
+});
+
 module.exports = router;
