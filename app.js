@@ -4,7 +4,6 @@ const dotenv = require('dotenv');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const Sequelize = require('sequelize');
 
 const moviesRouter = require('./routes/movies');
 const commentsRouter = require('./routes/comments');
@@ -40,11 +39,5 @@ app.use((err, req, res) => {
   res.status(err.status || 500);
   res.render('error');
 });
-
-const sequelize = new Sequelize(process.env.DATABASE_URL, { native: true });
-sequelize
-  .authenticate()
-  .then(() => console.log('Connection has been established successfully.'))
-  .catch(err => console.error('Unable to connect to the database:', err));
 
 module.exports = app;
