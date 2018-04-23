@@ -4,6 +4,7 @@ module.exports = {
       title: 'Test',
       createdAt: Sequelize.fn('NOW'),
       updatedAt: Sequelize.fn('NOW'),
+      document: JSON.stringify({"Title":"Test","Year":"2013"}),
     }], {});
   },
 
