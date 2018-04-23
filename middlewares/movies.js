@@ -1,7 +1,7 @@
 const { body, validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
-const omdbApi = require('omdb-client');
 
+const omdb = require('../utils/omdb');
 const models = require('../models');
 
 
@@ -32,17 +32,13 @@ exports.createMovie = (req, res, next) => {
       .status(400)
       .json(errors.mapped());
   } else {
-    const params = {
-      apiKey: process.env.OMDB_API_KEY,
-      title,
-    };
-    omdbApi.get(params, (err, data) => {
-      if (err) {
-        res.status(404).json({ msg: 'Movie not found' });
-        return;
-      }
-
-      res.json(data);
-    });
+    omdb
+      .getMovieByTitle(title)
+      .then((data) => {
+        res.json(data);
+      })
+      .catch((err) => {
+        res.status(404).json({ msg: err });
+      });
   }
 };
