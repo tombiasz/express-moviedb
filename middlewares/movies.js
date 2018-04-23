@@ -6,3 +6,8 @@ exports.getAllMovies = (req, res) => {
     .findAll()
     .then(movies => res.json(movies));
 };
+
+exports.createMovie = (req, res) => {
+  const { title } = req.body;
+  res.json(title);
+};

@@ -1,15 +1,14 @@
 const express = require('express');
 
-const { getAllMovies } = require('../middlewares/movies');
+const {
+  getAllMovies,
+  createMovie,
+} = require('../middlewares/movies');
 
 
 const router = express.Router();
 
 router.get('/', getAllMovies);
-
-router.post('/', (req, res) => {
-  const { title } = req.body;
-  res.json(title);
-});
+router.post('/', createMovie);
 
 module.exports = router;
