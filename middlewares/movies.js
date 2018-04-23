@@ -24,21 +24,32 @@ exports.validateMovie = [
     .escape(),
 ];
 
-exports.createMovie = (req, res, next) => {
+exports.createMovie = (req, res) => {
   const { title } = req.body;
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     res
       .status(400)
       .json(errors.mapped());
   } else {
-    omdb
-      .getMovieByTitle(title)
-      .then((data) => {
-        res.json(data);
-      })
-      .catch((err) => {
-        res.status(404).json({ msg: err });
+    models.Movie
+      .find({ where: { title } })
+      .then((movie) => {
+        if (movie) {
+          res.json(movie);
+        } else {
+          omdb
+            .getMovieByTitle(title)
+            .then((document) => {
+              models.Movie
+                .create({ title, document })
+                .then(res.json);
+            })
+            .catch((err) => {
+              res.status(404).json({ msg: err });
+            });
+        }
       });
   }
 };
