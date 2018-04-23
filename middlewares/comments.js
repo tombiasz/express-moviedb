@@ -1,12 +1,22 @@
 const { body, validationResult } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
+const { sanitizeBody, sanitizeQuery } = require('express-validator/filter');
 
 const models = require('../models');
 
+exports.sanitizeGetAllCommentsQueryParams = [
+  sanitizeQuery('movieId')
+    .toInt(),
+];
 
 exports.getAllComments = (req, res) => {
+  const { movieId } = req.query;
+  const options = { where: {} };
+
+  if (movieId) {
+    options.where.movieId = movieId;
+  }
   models.Comment
-    .findAll()
+    .findAll(options)
     .then(comments => res.json(comments));
 };
 
