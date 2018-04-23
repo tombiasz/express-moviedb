@@ -1,15 +1,11 @@
 const express = require('express');
 
-const models = require('../models');
+const { getAllMovies } = require('../middlewares/movies');
 
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  models.Movie
-    .findAll()
-    .then(movies => res.json(movies));
-});
+router.get('/', getAllMovies);
 
 router.post('/', (req, res) => {
   const { title } = req.body;
