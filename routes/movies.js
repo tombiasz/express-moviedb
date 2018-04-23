@@ -8,7 +8,9 @@ const {
 
 const router = express.Router();
 
-router.get('/', getAllMovies);
-router.post('/', createMovie);
+router
+  .route('/')
+  .get(getAllMovies)
+  .post(createMovie);
 
 module.exports = router;
