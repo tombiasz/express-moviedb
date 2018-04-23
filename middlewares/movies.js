@@ -24,7 +24,7 @@ exports.validateMovie = [
     .escape(),
 ];
 
-exports.createMovie = (req, res) => {
+exports.findOrCreateMovie = (req, res) => {
   const { title } = req.body;
   const errors = validationResult(req);
 
