@@ -1,3 +1,8 @@
+const models = require('../models');
+
+
 exports.getAllComments = (req, res) => {
-  res.json('all comments');
+  models.Comment
+    .findAll()
+    .then(comments => res.json(comments));
 };
