@@ -134,6 +134,21 @@ describe('Movie middlewares', () => {
         .catch(done);
     });
 
+    it('should verify if title does not contains only white characters', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { title: '      \t         ' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateMovie)
+        .then(() => {
+          const errors = validationResult(req);
+          const { title } = errors.mapped();
+          expect(title.msg).to.equal('Title must be at least 1 character long.');
+          done();
+        })
+        .catch(done);
+    });
+
     it('should not raise error if title is valid', (done) => {
       const { res, req, next } = this;
 
