@@ -18,7 +18,9 @@ exports.validateMovie = [
     .withMessage('Title must be specified.')
     .isLength({ min: 1 })
     .withMessage('Title must be at least 1 character long.'),
+];
 
+exports.sanitizeMovie = [
   sanitizeBody('title')
     .trim()
     .escape(),
