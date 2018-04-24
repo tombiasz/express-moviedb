@@ -4,13 +4,15 @@ const mocha = require('mocha');
 const sinon = require('sinon');
 const { validationResult } = require('express-validator/check');
 
-
 const models = require('../../models');
 const dbUtils = require('../../utils/db');
 const testUtils = require('../../utils/test');
 const movieFactory = require('../factories/movie');
+const omdbDocumentFactory = require('../factories/omdb-document');
+const omdb = require('../../utils/omdb');
 const {
   findMovie,
+  findMovieInOMDB,
   getAllMovies,
   validateMovie,
   sanitizeMovie,
@@ -232,6 +234,61 @@ describe('Movie middlewares', () => {
           done();
         })
         .catch(done);
+    });
+  });
+
+  describe('findMovieInOMDB', () => {
+    it('should set res.locals.movieDocument to data recieved from OMDB API', (done) => {
+      const { res, req, next } = this;
+      const document = omdbDocumentFactory();
+      const fakeGetMovieByTitle = sinon
+        .stub(omdb, 'getMovieByTitle')
+        .returns(Promise.resolve(document));
+
+      req.body = { title: 'test' };
+      findMovieInOMDB(req, res, next)
+        .then(() => {
+          expect(res.locals).to.have.property('movieDocument');
+          expect(res.locals.movieDocument).to.deep.equal(document);
+          fakeGetMovieByTitle.restore();
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should call next if movie was found in OMDB API', (done) => {
+      const { res, req, next } = this;
+      const fakeGetMovieByTitle = sinon
+        .stub(omdb, 'getMovieByTitle')
+        .returns(Promise.resolve(true));
+
+      req.body = { title: 'test' };
+      findMovieInOMDB(req, res, next)
+        .then(() => {
+          expect(next.calledWithExactly()).to.be.true;
+          fakeGetMovieByTitle.restore();
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should return 404 if movie was not found', (done) => {
+      const { res, req, next } = this;
+      const error = 'Not found';
+      const fakeGetMovieByTitle = sinon
+        .stub(omdb, 'getMovieByTitle')
+        .returns(Promise.reject(error));
+
+      req.body = { title: 'test' };
+      findMovieInOMDB(req, res, next)
+        .then(() => {
+          expect(res._getStatusCode()).to.be.equal(404);
+          expect(res._isJSON()).to.be.true;
+          const data = JSON.parse(res._getData());
+          expect(data.msg).to.be.equal(error);
+          fakeGetMovieByTitle.restore();
+          done();
+        });
     });
   });
 });
