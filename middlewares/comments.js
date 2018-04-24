@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator/check');
+const { body } = require('express-validator/check');
 const { sanitizeBody, sanitizeQuery } = require('express-validator/filter');
 
 const models = require('../models');
