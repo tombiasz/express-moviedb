@@ -1,20 +1,13 @@
 const faker = require('faker');
 
 const models = require('../../models');
+const omdbDocumentFactory = require('./omdb-document');
 
-
-const getOMDBDocument = () => {
-  return {
-    Title: faker.random.word(),
-    Plot: faker.lorem.sentence(),
-    Year: faker.date.past(100).getFullYear(),
-  };
-};
 
 const getMovie = (props = {}) => {
   const defaultProps = {
     title: faker.random.word(),
-    document: getOMDBDocument(),
+    document: omdbDocumentFactory(),
   };
 
   return { ...defaultProps, ...props };
