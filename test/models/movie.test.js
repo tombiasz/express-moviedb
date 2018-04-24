@@ -1,7 +1,7 @@
 const chai = require('chai');
 const mocha = require('mocha');
 
-const dbUtils = require('../utils/db');
+const dbUtils = require('../../utils/db');
 const movieFactory = require('../factories/movie');
 
 
