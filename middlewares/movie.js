@@ -25,25 +25,36 @@ exports.sanitizeMovie = [
     .escape(),
 ];
 
-exports.findOrCreateMovie = (req, res) => {
+exports.findMovie = (req, res, next) => {
   const { title } = req.body;
 
-  models.Movie
+  return models.Movie
     .find({ where: { title } })
     .then((movie) => {
       if (movie) {
-        res.json(movie);
-      } else {
-        omdb
-          .getMovieByTitle(title)
-          .then((document) => {
-            models.Movie
-              .create({ title, document })
-              .then(created => res.json(created));
-          })
-          .catch((err) => {
-            res.status(404).json({ msg: err });
-          });
+        return res.json(movie);
       }
+      return next();
     });
+};
+
+exports.findMovieInOMDB = (req, res, next) => {
+  const { title } = req.body;
+
+  return omdb
+    .getMovieByTitle(title)
+    .then((movieDocument) => {
+      res.locals.movieDocument = movieDocument;
+      return next();
+    })
+    .catch(err => res.status(404).json({ msg: err }));
+};
+
+exports.createMovie = (req, res) => {
+  const { title } = req.body;
+  const document = res.locals.movieDocument;
+
+  return models.Movie
+    .create({ title, document })
+    .then(created => res.json(created));
 };

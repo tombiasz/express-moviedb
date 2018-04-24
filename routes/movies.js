@@ -1,8 +1,10 @@
 const express = require('express');
 
 const {
+  createMovie,
+  findMovie,
+  findMovieInOMDB,
   getAllMovies,
-  findOrCreateMovie,
   sanitizeMovie,
   validateMovie,
 } = require('../middlewares/movie');
@@ -16,6 +18,13 @@ const router = express.Router();
 router
   .route('/')
   .get(getAllMovies)
-  .post(validateMovie, checkValidationErrors, sanitizeMovie, findOrCreateMovie);
+  .post(
+    validateMovie,
+    checkValidationErrors,
+    sanitizeMovie,
+    findMovie,
+    findMovieInOMDB,
+    createMovie,
+  );
 
 module.exports = router;
