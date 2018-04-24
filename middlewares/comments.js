@@ -60,15 +60,8 @@ exports.validateComment = [
 
 exports.createComment = (req, res) => {
   const { movieId, body } = req.body;
-  const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    res
-      .status(400)
-      .json(errors.mapped());
-  } else {
-    models.Comment
-      .create({ movieId, body })
-      .then(comment => res.json(comment));
-  }
+  models.Comment
+    .create({ movieId, body })
+    .then(comment => res.json(comment));
 };

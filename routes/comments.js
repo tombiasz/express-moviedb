@@ -6,6 +6,9 @@ const {
   sanitizeGetAllCommentsQueryParams,
   validateComment,
 } = require('../middlewares/comments');
+const {
+  checkValidationErrors,
+} = require('../middlewares/commons');
 
 
 const router = express.Router();
@@ -13,6 +16,6 @@ const router = express.Router();
 router
   .route('/')
   .get(sanitizeGetAllCommentsQueryParams, getAllComments)
-  .post(validateComment, createComment);
+  .post(validateComment, checkValidationErrors, createComment);
 
 module.exports = router;
