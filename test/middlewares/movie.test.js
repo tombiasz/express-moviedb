@@ -10,6 +10,7 @@ const dbUtils = require('../../utils/db');
 const testUtils = require('../../utils/test');
 const movieFactory = require('../factories/movie');
 const {
+  findMovie,
   getAllMovies,
   validateMovie,
   sanitizeMovie,
@@ -187,6 +188,47 @@ describe('Movie middlewares', () => {
         .testExpressValidatorArrayMiddleware(req, res, next, sanitizeMovie)
         .then(() => {
           expect(req.body.title).to.equal('name&lt;script&gt;alert(1)&lt;&#x2F;script&gt;');
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('findMovie', () => {
+    it('should return JSON if movie exists in database', (done) => {
+      const { res, req, next, movies } = this;
+      const selectedMovie = movies[0];
+
+      req.body = { title: selectedMovie.title };
+      findMovie(req, res, next)
+        .then(() => {
+          expect(res._isJSON()).to.be.true;
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should return movie with a given title', (done) => {
+      const { res, req, next, movies } = this;
+      const selectedMovie = movies[0];
+
+      req.body = { title: selectedMovie.title };
+      findMovie(req, res, next)
+        .then(() => {
+          const { title } = JSON.parse(res._getData());
+          expect(title).to.be.equal(selectedMovie.title);
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should call next if movie was not found', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { title: 'nonexistent-title' };
+      findMovie(req, res, next)
+        .then(() => {
+          expect(next.calledWithExactly()).to.be.true;
           done();
         })
         .catch(done);
