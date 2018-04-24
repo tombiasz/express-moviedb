@@ -14,4 +14,9 @@ module.exports = {
     native: true,
     quoteIdentifiers: false,
   },
+  test: {
+    use_env_variable: 'TEST_DATABASE_URL',
+    native: true,
+    quoteIdentifiers: false,
+  },
 };
