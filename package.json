@@ -30,6 +30,8 @@
     "eslint-plugin-import": "^2.11.0",
     "faker": "^4.1.0",
     "mocha": "^5.1.1",
-    "nodemon": "^1.17.3"
+    "node-mocks-http": "^1.5.8",
+    "nodemon": "^1.17.3",
+    "sinon": "^4.5.0"
   }
 }
