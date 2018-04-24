@@ -26,25 +26,26 @@ before((done) => {
 });
 
 describe('Movie middlewares', () => {
-  before((done) => {
-    Promise
-      .all([
-        movieFactory(),
-        movieFactory(),
-        movieFactory(),
-        movieFactory(),
-      ])
-      .then((movies) => {
-        this.movies = movies;
-        done();
-      });
-  });
-
   beforeEach((done) => {
     this.req = httpMocks.createRequest();
     this.res = httpMocks.createResponse();
     this.next = sinon.spy();
-    done();
+
+
+    dbUtils
+      .rebuildDatabase()
+      .then(() => {
+        return Promise.all([
+          movieFactory(),
+          movieFactory(),
+          movieFactory(),
+          movieFactory(),
+        ]);
+      })
+      .then((movies) => {
+        this.movies = movies;
+        done();
+      });
   });
 
   describe('getAllMovies', () => {
@@ -81,14 +82,14 @@ describe('Movie middlewares', () => {
           const moviesIds = movies.map(getIds);
           const dataIds = data.map(getIds);
 
-          expect(dataIds).to.deep.equal(moviesIds);
+          expect(dataIds.sort()).to.deep.equal(moviesIds.sort());
           done();
         })
         .catch(done);
     });
 
     it('should return an array when there are no movies', (done) => {
-      const { req, res, movies } = this;
+      const { req, res } = this;
 
       models.Movie
         .destroy({ where: {} })
@@ -96,9 +97,8 @@ describe('Movie middlewares', () => {
         .then(() => {
           const data = JSON.parse(res._getData());
           expect(data).to.be.a('array');
+          done();
         })
-        .then(() => models.Movie.bulkCreate(movies))
-        .then(() => done())
         .catch(done);
     });
   });
