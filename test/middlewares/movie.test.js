@@ -2,13 +2,16 @@ const chai = require('chai');
 const httpMocks = require('node-mocks-http');
 const mocha = require('mocha');
 const sinon = require('sinon');
+const { validationResult } = require('express-validator/check');
 
 
 const models = require('../../models');
 const dbUtils = require('../../utils/db');
+const testUtils = require('../../utils/test');
 const movieFactory = require('../factories/movie');
 const {
   getAllMovies,
+  validateMovie,
 } = require('../../middlewares/movie');
 
 
@@ -95,6 +98,53 @@ describe('Movie middlewares', () => {
         })
         .then(() => models.Movie.bulkCreate(movies))
         .then(() => done())
+        .catch(done);
+    });
+  });
+
+  describe('validateMovie', () => {
+    it('should verify if title was provided', (done) => {
+      const { res, req, next } = this;
+
+      req.body = {};
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateMovie)
+        .then(() => {
+          const errors = validationResult(req);
+          const { title } = errors.mapped();
+          expect(title.msg).to.equal('Title must be specified.');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if title is not empty string', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { title: '' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateMovie)
+        .then(() => {
+          const errors = validationResult(req);
+          const { title } = errors.mapped();
+          expect(title.msg).to.equal('Title must be at least 1 character long.');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should not raise error if title is valid', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { title: 'title' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateMovie)
+        .then(() => {
+          const errors = validationResult(req);
+          const { title } = errors.mapped();
+          expect(title).to.equal(undefined);
+          done();
+        })
         .catch(done);
     });
   });
