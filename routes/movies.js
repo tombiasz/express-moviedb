@@ -1,6 +1,7 @@
 const express = require('express');
 
 const {
+  checkValidationErrors,
   getAllMovies,
   findOrCreateMovie,
   validateMovie,
@@ -12,6 +13,6 @@ const router = express.Router();
 router
   .route('/')
   .get(getAllMovies)
-  .post(validateMovie, findOrCreateMovie);
+  .post(validateMovie, checkValidationErrors, findOrCreateMovie);
 
 module.exports = router;

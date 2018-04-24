@@ -24,32 +24,37 @@ exports.validateMovie = [
     .escape(),
 ];
 
-exports.findOrCreateMovie = (req, res) => {
-  const { title } = req.body;
+exports.checkValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    res
-      .status(400)
-      .json(errors.mapped());
-  } else {
-    models.Movie
-      .find({ where: { title } })
-      .then((movie) => {
-        if (movie) {
-          res.json(movie);
-        } else {
-          omdb
-            .getMovieByTitle(title)
-            .then((document) => {
-              models.Movie
-                .create({ title, document })
-                .then(created => res.json(created));
-            })
-            .catch((err) => {
-              res.status(404).json({ msg: err });
-            });
-        }
-      });
+  if (errors.isEmpty()) {
+    return next();
   }
+
+  res
+    .status(400)
+    .json(errors.mapped());
+};
+
+exports.findOrCreateMovie = (req, res) => {
+  const { title } = req.body;
+
+  models.Movie
+    .find({ where: { title } })
+    .then((movie) => {
+      if (movie) {
+        res.json(movie);
+      } else {
+        omdb
+          .getMovieByTitle(title)
+          .then((document) => {
+            models.Movie
+              .create({ title, document })
+              .then(created => res.json(created));
+          })
+          .catch((err) => {
+            res.status(404).json({ msg: err });
+          });
+      }
+    });
 };
