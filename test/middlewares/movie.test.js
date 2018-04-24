@@ -12,6 +12,7 @@ const movieFactory = require('../factories/movie');
 const {
   getAllMovies,
   validateMovie,
+  sanitizeMovie,
 } = require('../../middlewares/movie');
 
 
@@ -143,6 +144,34 @@ describe('Movie middlewares', () => {
           const errors = validationResult(req);
           const { title } = errors.mapped();
           expect(title).to.equal(undefined);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('sanitizeMovie', () => {
+    it('should verify if title will be trimmed', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { title: '   test         ' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeMovie)
+        .then(() => {
+          expect(req.body.title).to.equal('test');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if title will be escaped', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { title: 'name<script>alert(1)</script>' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeMovie)
+        .then(() => {
+          expect(req.body.title).to.equal('name&lt;script&gt;alert(1)&lt;&#x2F;script&gt;');
           done();
         })
         .catch(done);
