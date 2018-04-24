@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator/check');
+const { body } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
 const omdb = require('../utils/omdb');
@@ -25,15 +25,11 @@ exports.validateMovie = [
 ];
 
 exports.checkValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-
-  if (errors.isEmpty()) {
-    return next();
-  }
-
-  res
-    .status(400)
-    .json(errors.mapped());
+  const mapped = true;
+  return req
+    .asyncValidationErrors(mapped)
+    .then(next)
+    .catch(errors => res.status(400).json(errors));
 };
 
 exports.findOrCreateMovie = (req, res) => {
