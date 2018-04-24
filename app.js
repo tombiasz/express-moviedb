@@ -25,14 +25,11 @@ app.use('/comments', commentsRouter);
 app.use((req, res, next) => next(createError(404)));
 
 // error handler
-app.use((err, req, res) => {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use((err, req, res, next) => {
+  const msg = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.json({ msg });
 });
 
 module.exports = app;
