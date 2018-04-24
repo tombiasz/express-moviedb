@@ -44,7 +44,7 @@ exports.findOrCreateMovie = (req, res) => {
             .then((document) => {
               models.Movie
                 .create({ title, document })
-                .then(res.json);
+                .then(created => res.json(created));
             })
             .catch((err) => {
               res.status(404).json({ msg: err });
