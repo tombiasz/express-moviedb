@@ -5,10 +5,10 @@ const {
   findOrCreateMovie,
   sanitizeMovie,
   validateMovie,
-} = require('../middlewares/movies');
+} = require('../middlewares/movie');
 const {
   checkValidationErrors,
-} = require('../middlewares/commons');
+} = require('../middlewares/common');
 
 
 const router = express.Router();

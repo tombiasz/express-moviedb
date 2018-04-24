@@ -6,10 +6,10 @@ const {
   sanitizeComment,
   sanitizeGetAllCommentsQueryParams,
   validateComment,
-} = require('../middlewares/comments');
+} = require('../middlewares/comment');
 const {
   checkValidationErrors,
-} = require('../middlewares/commons');
+} = require('../middlewares/common');
 
 
 const router = express.Router();
