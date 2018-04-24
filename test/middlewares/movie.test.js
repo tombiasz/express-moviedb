@@ -11,6 +11,7 @@ const movieFactory = require('../factories/movie');
 const omdbDocumentFactory = require('../factories/omdb-document');
 const omdb = require('../../utils/omdb');
 const {
+  createMovie,
   findMovie,
   findMovieInOMDB,
   getAllMovies,
@@ -289,6 +290,30 @@ describe('Movie middlewares', () => {
           fakeGetMovieByTitle.restore();
           done();
         });
+    });
+  });
+
+  describe('createMovie', () => {
+    it('should return created movie object as JSON', (done) => {
+      const { res, req } = this;
+      const title = 'test';
+      const movieDocument = omdbDocumentFactory();
+
+      req.body = { title };
+      res.locals.movieDocument = movieDocument;
+      createMovie(req, res)
+        .then(() => {
+          expect(res._isJSON()).to.be.true;
+
+          const data = JSON.parse(res._getData());
+          expect(data).to.have.property('id');
+          expect(data).to.have.property('title');
+          expect(data).to.have.property('document');
+          expect(data.title).to.equal(title);
+          expect(data.document).to.deep.equal(movieDocument);
+          done();
+        })
+        .catch(done);
     });
   });
 });
