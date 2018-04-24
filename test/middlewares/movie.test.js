@@ -23,12 +23,6 @@ const {
 const { expect } = chai;
 const { describe, it, before, beforeEach } = mocha;
 
-before((done) => {
-  dbUtils
-    .rebuildDatabase()
-    .then(() => done());
-});
-
 describe('Movie middlewares', () => {
   beforeEach((done) => {
     this.req = httpMocks.createRequest();
