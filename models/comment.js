@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Comment = sequelize.define('Comment', {
     body: DataTypes.TEXT,
-    movieId: DataTypes.INTEGER,
+    MovieId: DataTypes.INTEGER,
   }, {});
 
   Comment.associate = (models) => {
