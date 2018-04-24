@@ -5,11 +5,10 @@ const omdb = require('../utils/omdb');
 const models = require('../models');
 
 
-exports.getAllMovies = (req, res) => {
+exports.getAllMovies = (req, res) =>
   models.Movie
     .findAll()
     .then(movies => res.json(movies));
-};
 
 exports.validateMovie = [
   body('title')
