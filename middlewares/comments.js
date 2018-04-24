@@ -48,7 +48,9 @@ exports.validateComment = [
     .withMessage('Body must be specified.')
     .isLength({ min: 1 })
     .withMessage('Body must be at least 1 character long.'),
+];
 
+exports.sanitizeComment = [
   sanitizeBody('movieId')
     .trim()
     .toInt(),
