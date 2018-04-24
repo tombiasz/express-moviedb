@@ -1,11 +1,18 @@
 const chai = require('chai');
 const mocha = require('mocha');
 
+const dbUtils = require('../utils/db');
 const movieFactory = require('../factories/movie');
 
 
 const { expect } = chai;
 const { describe, it, before } = mocha;
+
+before((done) => {
+  dbUtils
+    .rebuildDatabase()
+    .then(() => done());
+});
 
 describe('Movie model', () => {
   before((done) => {
