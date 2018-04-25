@@ -12,6 +12,7 @@ const commentFactory = require('../factories/comment');
 const {
   getAllComments,
   sanitizeGetAllCommentsQueryParams,
+  validateComment,
 } = require('../../middlewares/comment');
 
 
@@ -152,6 +153,128 @@ describe('Comment middlewares', () => {
         .testExpressValidatorArrayMiddleware(req, res, next, sanitizeGetAllCommentsQueryParams)
         .then(() => {
           expect(req.query.movieId).to.be.NaN;
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('validateComment', () => {
+    it('should verify if movieId was provided', (done) => {
+      const { res, req, next } = this;
+
+      req.body = {};
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateComment)
+        .then(() => {
+          const errors = validationResult(req);
+          const { movieId } = errors.mapped();
+          expect(movieId.msg).to.equal('Movie ID must be specified.');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if movieId is valid integer', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { movieId: 'invalid' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateComment)
+        .then(() => {
+          const errors = validationResult(req);
+          const { movieId } = errors.mapped();
+          expect(movieId.msg).to.equal('Movie ID must be an integer');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if movieId exists in database', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { movieId: 99988888882123 };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateComment)
+        .then(() => {
+          const errors = validationResult(req);
+          const { movieId } = errors.mapped();
+          expect(movieId.msg).to.equal('Invalid Movie ID');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should not raise validation error if movieId is valid', (done) => {
+      const { res, req, next, movie1 } = this;
+
+      req.body = { movieId: movie1.id };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateComment)
+        .then(() => {
+          const errors = validationResult(req);
+          const { movieId } = errors.mapped();
+          expect(movieId).to.equal(undefined);
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if body was provided', (done) => {
+      const { res, req, next } = this;
+
+      req.body = {};
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateComment)
+        .then(() => {
+          const errors = validationResult(req);
+          const { body } = errors.mapped();
+          expect(body.msg).to.equal('Body must be specified.');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if body is not empty string', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { body: '' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateComment)
+        .then(() => {
+          const errors = validationResult(req);
+          const { body } = errors.mapped();
+          expect(body.msg).to.equal('Body must be at least 1 character long.');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if body does not contains only white characters', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { body: '         \t          ' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateComment)
+        .then(() => {
+          const errors = validationResult(req);
+          const { body } = errors.mapped();
+          expect(body.msg).to.equal('Body must be at least 1 character long.');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should not raise validation error if body is valid', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { body: 'comment' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, validateComment)
+        .then(() => {
+          const errors = validationResult(req);
+          const { body } = errors.mapped();
+          expect(body).to.equal(undefined);
           done();
         })
         .catch(done);
