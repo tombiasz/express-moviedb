@@ -15,7 +15,7 @@ exports.getAllComments = (req, res) => {
   if (movieId) {
     options.where.movieId = movieId;
   }
-  models.Comment
+  return models.Comment
     .findAll(options)
     .then(comments => res.json(comments));
 };
