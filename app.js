@@ -27,10 +27,24 @@ app.use((req, res, next) => next(createError(404)));
 
 // error handler
 app.use((err, req, res, next) => {
-  const msg = req.app.get('env') === 'development' ? err : {};
-
   res.status(err.status || 500);
-  res.json({ msg });
+  if (req.app.get('env') === 'production') {
+    let msg = '';
+    switch (err.status) {
+      case 404:
+        msg = 'Not found';
+        break;
+      case 500:
+        msg = 'Server error';
+        break;
+      default:
+        msg = 'Error';
+        break;
+    }
+    res.json({ msg });
+  } else {
+    res.json({ err });
+  }
 });
 
 module.exports = app;
