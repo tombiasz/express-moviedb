@@ -63,6 +63,6 @@ exports.createComment = (req, res) => {
   const { movieId, body } = req.body;
 
   models.Comment
-    .create({ movieId, body })
+    .create({ MovieId: movieId, body })
     .then(comment => res.json(comment));
 };
