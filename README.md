@@ -27,10 +27,15 @@ Simple REST API  interacting with [OMDb API](http://www.omdbapi.com/)
  2. `cd` into created directory
  3. run `npm install`
  4. in root directory create `.env` file based on `.env.template` file or set environment variable
- 5. run `npm start`
+ 5. run `npm run start`
 
 ## ENV variables
 
- - `DATABASE_URL` - databse connection string eg. `postgresql://127.0.0.1:5432/moviedb`
+ - `DATABASE_URL` - databse connection string eg `postgresql://127.0.0.1:5432/moviedb`
  - `OMDB_API_KEY` - your OMDb API key
  - `TEST_DATABASE_URL` - *(optional)* test database connection string
+
+## Tests
+
+ 1. Set `TEST_DATABASE_URL` environment variable
+ 2. run `npm run test`
