@@ -11,6 +11,7 @@ const movieFactory = require('../factories/movie');
 const commentFactory = require('../factories/comment');
 const {
   getAllComments,
+  sanitizeComment,
   sanitizeGetAllCommentsQueryParams,
   validateComment,
 } = require('../../middlewares/comment');
@@ -275,6 +276,78 @@ describe('Comment middlewares', () => {
           const errors = validationResult(req);
           const { body } = errors.mapped();
           expect(body).to.equal(undefined);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('sanitizeComment', () => {
+    it('should verify if movieId will be trimmed', (done) => {
+      const { res, req, next } = this;
+      const movieId = '   123  ';
+
+      req.body = { movieId };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeComment)
+        .then(() => {
+          expect(req.body.movieId.toString()).to.equal(movieId.trim());
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if movieId will be cast to number', (done) => {
+      const { res, req, next } = this;
+      const movieId = '123';
+
+      req.body = { movieId };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeComment)
+        .then(() => {
+          expect(req.body.movieId).to.be.a('number');
+          expect(req.body.movieId).to.be.equal(parseInt(movieId, 10));
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if invalid movieId will be set to NaN', (done) => {
+      const { res, req, next } = this;
+      const movieId = 'invalid';
+
+      req.body = { movieId };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeComment)
+        .then(() => {
+          expect(req.body.movieId).to.be.NaN;
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if body will be trimmed', (done) => {
+      const { res, req, next } = this;
+      const body = '   comment body  ';
+
+      req.body = { body };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeComment)
+        .then(() => {
+          expect(req.body.body).to.equal(body.trim());
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if body will be escaped', (done) => {
+      const { res, req, next } = this;
+
+      req.body = { body: 'name<script>alert(1)</script>' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeComment)
+        .then(() => {
+          expect(req.body.body).to.equal('name&lt;script&gt;alert(1)&lt;&#x2F;script&gt;');
           done();
         })
         .catch(done);
