@@ -32,6 +32,7 @@
     "mocha": "^5.1.1",
     "node-mocks-http": "^1.5.8",
     "nodemon": "^1.17.3",
-    "sinon": "^4.5.0"
+    "sinon": "^4.5.0",
+    "sqlite3": "^4.0.0"
   }
 }
