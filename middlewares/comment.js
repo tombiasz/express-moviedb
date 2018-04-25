@@ -62,7 +62,7 @@ exports.sanitizeComment = [
 exports.createComment = (req, res) => {
   const { movieId, body } = req.body;
 
-  models.Comment
+  return models.Comment
     .create({ MovieId: movieId, body })
     .then(comment => res.json(comment));
 };
