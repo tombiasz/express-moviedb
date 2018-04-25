@@ -10,6 +10,7 @@ const testUtils = require('../../utils/test');
 const movieFactory = require('../factories/movie');
 const commentFactory = require('../factories/comment');
 const {
+  createComment,
   getAllComments,
   sanitizeComment,
   sanitizeGetAllCommentsQueryParams,
@@ -348,6 +349,31 @@ describe('Comment middlewares', () => {
         .testExpressValidatorArrayMiddleware(req, res, next, sanitizeComment)
         .then(() => {
           expect(req.body.body).to.equal('name&lt;script&gt;alert(1)&lt;&#x2F;script&gt;');
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('createComment', () => {
+    it('should return created comment object as JSON', (done) => {
+      const { res, req, movie1 } = this;
+      const body = 'test comment';
+
+      req.body = {
+        movieId: movie1.id,
+        body,
+      };
+      createComment(req, res)
+        .then(() => {
+          expect(res._isJSON()).to.be.true;
+
+          const data = JSON.parse(res._getData());
+          expect(data).to.have.property('id');
+          expect(data).to.have.property('MovieId');
+          expect(data).to.have.property('body');
+          expect(data.MovieId).to.equal(movie1.id);
+          expect(data.body).to.equal(body);
           done();
         })
         .catch(done);
