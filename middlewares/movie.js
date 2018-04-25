@@ -1,14 +1,48 @@
-const { body } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
+const { body, query } = require('express-validator/check');
+const { sanitizeBody, sanitizeQuery } = require('express-validator/filter');
 
 const omdb = require('../utils/omdb');
 const models = require('../models');
 
 
-exports.getAllMovies = (req, res) =>
-  models.Movie
-    .findAll()
+const ORDER_ASC = 'ASC';
+const ORDER_DESC = 'DESC';
+
+exports.sanitizeGetAllMoviesQueryParams = [
+  sanitizeQuery('orderByTitle')
+    .trim()
+    .customSanitizer((value) => {
+      try {
+        switch (value.toUpperCase()) {
+          case ORDER_DESC:
+            return ORDER_DESC;
+          case ORDER_ASC:
+            return ORDER_ASC;
+          default:
+            return ORDER_DESC;
+        }
+      } catch (e) {
+        return ORDER_DESC;
+      }
+    }),
+];
+
+exports.getAllMovies = (req, res) => {
+  const { orderByTitle } = req.query;
+  const options = {
+    where: {},
+  };
+
+  if (orderByTitle) {
+    options.order = [
+      ['title', orderByTitle],
+    ];
+  }
+
+  return models.Movie
+    .findAll(options)
     .then(movies => res.json(movies));
+};
 
 exports.validateMovie = [
   body('title')

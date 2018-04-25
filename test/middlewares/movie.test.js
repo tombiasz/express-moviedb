@@ -17,6 +17,7 @@ const {
   getAllMovies,
   validateMovie,
   sanitizeMovie,
+  sanitizeGetAllMoviesQueryParams,
 } = require('../../middlewares/movie');
 
 
@@ -95,6 +96,56 @@ describe('Movie middlewares', () => {
         .then(() => {
           const data = JSON.parse(res._getData());
           expect(data).to.be.a('array');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should return movies ordered by id if orderByTitle is not provided', (done) => {
+      const { req, res, movies } = this;
+
+      getAllMovies(req, res)
+        .then(() => {
+          const data = JSON.parse(res._getData());
+          const getIds = obj => obj.id;
+          const moviesIds = movies.map(getIds);
+          const dataIds = data.map(getIds);
+
+          expect(dataIds).to.deep.equal(moviesIds.sort());
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should return movies ordered by title desc if orderByTitle=DESC', (done) => {
+      const { req, res, movies } = this;
+
+      req.query.orderByTitle = 'DESC';
+      getAllMovies(req, res)
+        .then(() => {
+          const data = JSON.parse(res._getData());
+          const getTitle = obj => obj.title;
+          const moviesTitle = movies.map(getTitle);
+          const dataTitle = data.map(getTitle);
+
+          expect(dataTitle).to.deep.equal(moviesTitle.sort().reverse());
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should return movies ordered by title asc if orderByTitle=ASC', (done) => {
+      const { req, res, movies } = this;
+
+      req.query.orderByTitle = 'ASC';
+      getAllMovies(req, res)
+        .then(() => {
+          const data = JSON.parse(res._getData());
+          const getTitle = obj => obj.title;
+          const moviesTitle = movies.map(getTitle);
+          const dataTitle = data.map(getTitle);
+
+          expect(dataTitle).to.deep.equal(moviesTitle.sort());
           done();
         })
         .catch(done);
@@ -305,6 +356,99 @@ describe('Movie middlewares', () => {
           expect(data).to.have.property('document');
           expect(data.title).to.equal(title);
           expect(data.document).to.deep.equal(movieDocument);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('sanitizeGetAllMoviesQueryParams', () => {
+    it('should verify if orderByTitle will be trimmed', (done) => {
+      const { res, req, next } = this;
+
+      req.query = { orderByTitle: '       ASC    ' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeGetAllMoviesQueryParams)
+        .then(() => {
+          expect(req.query.orderByTitle).to.equal('ASC');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if orderByTitle will be uppercased', (done) => {
+      const { res, req, next } = this;
+
+      req.query = { orderByTitle: '       asc    ' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeGetAllMoviesQueryParams)
+        .then(() => {
+          expect(req.query.orderByTitle).to.equal('ASC');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if default value for orderByTitle is DESC', (done) => {
+      const { res, req, next } = this;
+
+      req.query = { orderByTitle: 'invalid-order' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeGetAllMoviesQueryParams)
+        .then(() => {
+          expect(req.query.orderByTitle).to.equal('DESC');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if orderByTitle=desc is valid order', (done) => {
+      const { res, req, next } = this;
+
+      req.query = { orderByTitle: 'desc' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeGetAllMoviesQueryParams)
+        .then(() => {
+          expect(req.query.orderByTitle).to.equal('DESC');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if orderByTitle=DESC is valid order', (done) => {
+      const { res, req, next } = this;
+
+      req.query = { orderByTitle: 'DESC' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeGetAllMoviesQueryParams)
+        .then(() => {
+          expect(req.query.orderByTitle).to.equal('DESC');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if orderByTitle=asc is valid order', (done) => {
+      const { res, req, next } = this;
+
+      req.query = { orderByTitle: 'asc' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeGetAllMoviesQueryParams)
+        .then(() => {
+          expect(req.query.orderByTitle).to.equal('ASC');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if orderByTitle=ASC is valid order', (done) => {
+      const { res, req, next } = this;
+
+      req.query = { orderByTitle: 'ASC' };
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeGetAllMoviesQueryParams)
+        .then(() => {
+          expect(req.query.orderByTitle).to.equal('ASC');
           done();
         })
         .catch(done);

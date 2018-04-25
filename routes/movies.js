@@ -5,6 +5,7 @@ const {
   findMovie,
   findMovieInOMDB,
   getAllMovies,
+  sanitizeGetAllMoviesQueryParams,
   sanitizeMovie,
   validateMovie,
 } = require('../middlewares/movie');
@@ -17,7 +18,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getAllMovies)
+  .get(sanitizeGetAllMoviesQueryParams, getAllMovies)
   .post(
     validateMovie,
     checkValidationErrors,
