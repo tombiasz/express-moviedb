@@ -11,6 +11,7 @@ const movieFactory = require('../factories/movie');
 const commentFactory = require('../factories/comment');
 const {
   getAllComments,
+  sanitizeGetAllCommentsQueryParams,
 } = require('../../middlewares/comment');
 
 
@@ -120,6 +121,37 @@ describe('Comment middlewares', () => {
           const dataIds = data.map(getIds);
 
           expect(dataIds.sort()).to.deep.equal(commentsIds.sort());
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('sanitizeGetAllCommentsQueryParams', () => {
+    it('should verify if movieId will be cast to number', (done) => {
+      const { res, req, next } = this;
+      const movieId = '123';
+
+      req.query.movieId = movieId;
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeGetAllCommentsQueryParams)
+        .then(() => {
+          expect(req.query.movieId).to.be.a('number');
+          expect(req.query.movieId).to.be.equal(parseInt(movieId, 10));
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should verify if invalid movieId will be set to NaN', (done) => {
+      const { res, req, next } = this;
+      const movieId = 'invalid';
+
+      req.query.movieId = movieId;
+      testUtils
+        .testExpressValidatorArrayMiddleware(req, res, next, sanitizeGetAllCommentsQueryParams)
+        .then(() => {
+          expect(req.query.movieId).to.be.NaN;
           done();
         })
         .catch(done);
