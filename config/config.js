@@ -18,5 +18,6 @@ module.exports = {
     use_env_variable: 'TEST_DATABASE_URL',
     native: true,
     quoteIdentifiers: false,
+    logging: false,
   },
 };
