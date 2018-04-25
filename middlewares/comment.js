@@ -24,7 +24,6 @@ exports.validateComment = [
   body('movieId')
     .trim()
     .exists()
-    .toInt()
     .withMessage('Movie ID must be specified.')
     .isInt()
     .withMessage('Movie ID must be an integer')
